@@ -3,8 +3,11 @@
 define('BOT_TOKEN', '385828264:AAFWcYKio65GV-D3-W66aWgUwq5bK-roa10');
 define('API_URL', 'https://api.telegram.org/bot'.BOT_TOKEN.'/');
 
+date_default_timezone_set('Asia/Kolkata');
+$date= date('d/m/Y h:i:s a', time());
+
 $file = 'log.txt';
-error_log("Test log\n", 3, $file);
+error_log($date."|"."Test log\n", 3, $file);
 
 function apiRequestWebhook($method, $parameters) {
   if (!is_string($method)) {
@@ -118,19 +121,41 @@ function apiRequestJson($method, $parameters) {
 
 function processMessage($message) {
   // process incoming message
-  $message_id = $message['message_id'];
+    global $date;
+    global $file;
+    $message_id = $message['message_id'];
   $chat_id = $message['chat']['id'];
   if (isset($message['text'])) {
     // incoming text message
     $text = $message['text'];
-
+error_log($date."|"."Coming to start\n", 3, $file);
     if (strpos($text, "/start") === 0) {
-      apiRequestJson("sendMessage", array('chat_id' => $chat_id, "text" => 'Hello', 'reply_markup' => array(
-        'keyboard' => array(array('Hello', 'Hi')),
-        'one_time_keyboard' => true,
-        'resize_keyboard' => true)));
-    } else if ($text === "Hello" || $text === "Hi") {
-      apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => 'Nice to meet you'));
+//      apiRequestJson("sendMessage", array('chat_id' => $chat_id, "text" => 'Hello', 'reply_markup' => array(
+//        'keyboard' => array(array('Hello', 'Hi')),
+//        'one_time_keyboard' => true,
+//        'resize_keyboard' => true)));
+        error_log($date."|"."Coming to start\n", 3, $file);
+        apiRequestJson("sendMessage", array('chat_id' => $chat_id, "text" => 'Hungry!!! Do You Want To Order a Pizza???', 'reply_markup' => array(
+        'keyboard' => array(
+        array("Order Now", "Not in a mood")
+    )
+        )));
+    } else if ($text === "Order Now") {
+      //apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => 'Nice to meet you'));
+        apiRequestJson("sendMessage", array('chat_id' => $chat_id, "text" => 'Please Select a Pizza', 'reply_markup' => array(
+        'keyboard' => array(
+        array("Margherita", "Peppy Paneer", "Cheese Burst")
+    ) 
+        )));
+    } else if ($text === "Not in a mood") {
+      //apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => 'Nice to meet you'));
+        apiRequestJson("sendMessage", array('chat_id' => $chat_id, "text" => 'Ok, No Problem :)'));
+    } else if ($text === "Margherita" || $text === "Peppy Paneer" || $text === "Cheese Burst") {
+      //apiRequest("sendMessage", array('chat_id' => $chat_id, "text" => 'Nice to meet you'));
+        apiRequestJson("sendMessage", array('chat_id' => $chat_id, "text" => 'Select a payment method', 'reply_markup' => array(
+        'keyboard' => array(
+        array("Cash On Delivery", "Wallets coming soon!!!")
+    ) )));
     } else if (strpos($text, "/stop") === 0) {
       // stop now
     } else {
@@ -161,12 +186,12 @@ if (!$update) {
   exit;
 }
 
-error_log("Processing\n", 3, $file);
+error_log($date."|"."Processing\n", 3, $file);
 
 if (isset($update["message"])) {
-	error_log("You messed up!\n", 3, $file);
+	error_log($date."|"."You messed up!\n", 3, $file);
   processMessage($update["message"]);
 } else {
 	$val = isset($update["message"]);
-	error_log("$val\n", 3, $file);
+	error_log($date."|"."$val\n", 3, $file);
 }
